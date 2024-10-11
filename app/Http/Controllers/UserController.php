@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Hash;
 class UserController extends Controller
 {
     //
-    public function store(Request $request) {
+    public function create(Request $request) {
         $request->validate([
             'name' => 'required|string',
             'phone' => 'required|string|unique:users|max:10| min:10',
@@ -31,14 +31,17 @@ class UserController extends Controller
 
         return response()->json(['user' => $user, 'message' => 'user registered successfully'], 201
     );
+//----------------------------------------------------------------------------
+
 
     }
     public Function login(Request $request){
         $request->validate([
-            'phone'=>'required|string',
-            'password'=>'required|string'
+            'phone' => 'required_without:email|string',
+            'email' => 'required_without:phone|email',
+            'password' => 'required|string'
         ]);
-        $credentials =request(['phone','password']);
+        $credentials =request(['phone','email', 'password']);
         if (!$token=auth('api')->attempt($credentials)) {
             return response()->json([
                 'error'=> 'Unauthorized'],401
@@ -53,21 +56,29 @@ class UserController extends Controller
         
 
     }
+//----------------------------------------------------------------------------
+
+
 
     public function logout(){
         auth('api')->logout();
         return response()->json(['message'=>'User logged out successfully']);
     }
+
+    //--------------------------------------------------------------------------------
+
+
     public function profile(){
         return response()->json(auth('api')->user());
     }
-   
+   //--------------------------------------------------------------------------------
+
+
     public function update(Request $request){
         $request->validate([
             'name' => 'string',
             'phone' => 'string|max:10| min:10',
             'email' => 'email',
-            'password' => 'string',
             'role' => 'string|in:admin,user,owner',
             'avatar' => 'string'
         ]);
@@ -75,12 +86,51 @@ class UserController extends Controller
         $user->update($request->all());
         return response()->json(['user' => $user, 'message' => 'user updated successfully'], 200);
     }
+    //--------------------------------------------------------------------------------
+
+
+    public function updatePassword(Request $request){
+        $request->validate([
+            'old_password' => 'required|string',
+            'new_password' => 'required|string'
+        ]);
+        $user = auth('api')->user();
+        if(!Hash::check($request->old_password, $user->password)) {
+            return response()->json(['message' => 'Old password is incorrect'], 400);
+        }
+        $user->password = Hash::make($request->new_password);
+        $user->save();
+        return response()->json(['message' => 'Password updated successfully'], 200);
+    }
+//--------------------------------------------------------------------------------
+
+
+    public function resetPassword(Request $request){
+        $request->validate([
+            'phone' => 'required|string|max:10| min:10',
+            'email' => 'required|email',
+            'new_password' => 'required|string'
+        ]);
+        $user = User::where('phone', $request->phone)->where('email', $request->email)->first();
+        if(!$user) {
+            return response()->json(['message' => 'User not found'], 404);
+        }
+        $user->password = Hash::make($request->new_password);
+        $user->save();
+        return response()->json(['message' => 'Password reset successfully'], 200);
+    }
+//--------------------------------------------------------------------------------
+
+
 
     public function destroy(){
         $user = auth('api')->user();
         $user->delete();
         return response()->json(['message' => 'user deleted successfully'], 200);
     }
+//--------------------------------------------------------------------------------
+
+
 
     public function index()
     {
@@ -90,6 +140,10 @@ class UserController extends Controller
         $users = User::all();
         return response()->json(['users' => $users], 200);
     }
+    
+    
+    //--------------------------------------------------------------------------------
+
     public function show($phone)
     {
         $user = User::where('phone', $phone)->first();
