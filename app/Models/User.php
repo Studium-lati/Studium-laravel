@@ -71,4 +71,38 @@ class User extends Authenticatable implements JWTSubject
     {
         return $this->hasMany(Stadium::class);
     }
+
+    public function reservations()
+    {
+        return $this->hasMany(Reservations::class);
+    }
+
+    public function randomMatchRequests()
+    {
+        return $this->hasMany(RandomMatchRequests::class);
+    }
+
+    public function matchLogs()
+    {
+        return $this->hasMany(MatchLog::class);
+    }
+
+    public function events()
+    {
+        return $this->hasMany(Events::class);
+    }
+    
+  
+    public function sentMessages(){
+        return $this->hasMany(Messages::class, 'sender_id');
+    }
+
+    public function receivedMessages(){
+        return $this->hasMany(Messages::class, 'receiver_id');
+    }
+
+
+
+
+    
 }

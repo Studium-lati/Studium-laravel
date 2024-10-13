@@ -24,5 +24,15 @@ class Stadium extends Model
         return $this->belongsTo(User::class);
     }
 
+    public function reservations()
+    {
+        return $this->hasMany(Reservations::class);
+    }
+
+    public function feedbacks()
+    {
+        return $this->hasMany(Feedback::class);
+    }
+
     use HasFactory;
 }

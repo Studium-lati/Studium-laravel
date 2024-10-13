@@ -34,6 +34,7 @@ class UserController extends Controller
 //----------------------------------------------------------------------------
 
 
+
     }
     public Function login(Request $request){
         $request->validate([
