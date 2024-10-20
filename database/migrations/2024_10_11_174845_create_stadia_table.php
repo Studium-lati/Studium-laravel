@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('capacity')->default(12);
             $table->string('image')->nullable();
             $table->string('description')->nullable();
+            $table->double('rating')->default(0);
             $table->enum('status', ['open', 'close'])->default('open');             
             $table->foreignId('user_id')->constrained()->onDelete('cascade')->where('role', 'owner');
 

@@ -9,7 +9,7 @@ class EventsController extends Controller
 {
    function index(){
        $events = Events::where('status', 'active')->get();
-        return response()->json($events);
+        return response()->json(["data"=>$events]);
    }
 
     function show($id){
@@ -23,7 +23,9 @@ class EventsController extends Controller
             'description' => 'required',
             'date' => 'required',
             'stadium_id' => 'required',
-            'status' => 'nullable','default' => 'active','in' => ['active', 'inactive']
+            'status' => 'nullable','default' => 'active','in' => ['active', 'inactive'],
+            'image' => 'nullable'
+
 
 
         ]);
@@ -49,13 +51,16 @@ class EventsController extends Controller
             'description' => 'nullable',
             'date' => '=nullable',
             'stadium_id' => 'nullable',
-            'status' => 'required','in' => ['active', 'inactive']
+            'status' => 'required','in' => ['active', 'inactive'],
+            'image' => 'nullable'
 
         ]);
         $event = Events::findOrFail($id);
         if($request->user()->role != 'owner' || $event->user_id != auth()->id()){
             return response()->json(['message' => 'You are not allowed to edit this event'], 403);
         }
+        $request->merge(['image' => "https://pigeon-wanted-wildcat.ngrok-free.app/storage/events/{$request->image}"]);
+
 
         
         $event->update($request->all());    

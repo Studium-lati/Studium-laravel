@@ -39,7 +39,7 @@ class FeedbackController extends Controller
         foreach ($feedbacks as $feedback) {
             $totalRating += $feedback->rating;
         }
-        $averageRating = $totalRating / count($feedbacks);
+        $averageRating = count($feedbacks) > 0 ? $totalRating / count($feedbacks) : 0;
         return response()->json($averageRating);
     }
 

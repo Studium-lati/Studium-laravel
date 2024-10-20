@@ -6,11 +6,13 @@ use App\Http\Controllers\ReservationsController;
 use App\Http\Controllers\StadiumController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\RandomMatchRequestsController;
+use App\Http\Controllers\UploaderController;
 use Illuminate\Support\Facades\Route;
 
 Route::post('register', [UserController::class, 'create']);
 Route::post('login', [UserController::class, 'login']);
 Route::put('reset-password', [UserController::class, 'resetPassword']);
+Route::post('refresh', [UserController::class, 'refresh']);
 Route::middleware('auth:api')->group(function () {
     //user
     Route::post('logout', [UserController::class, 'logout']);
@@ -82,5 +84,12 @@ Route::middleware('auth:api')->group(function () {
     Route::get('feedbacks/{id}', [FeedbackController::class, 'index']);
     Route::post('feedbacks/create', [FeedbackController::class, 'create']);
     Route::get('feedbacks/averageRating/{id}', [FeedbackController::class, 'averageRating']);
+
+
+    //-------------------------------------uploder--------------------------------
+    Route::post('upload/user', [UploaderController::class, 'uploadUserImage']);
+    Route::post('upload/stadium', [UploaderController::class, 'uploadStadiumImage']);
+    Route::post('upload/event', [UploaderController::class, 'uploadeventImage']);
+    Route::post('upload/user/cover', [UploaderController::class, 'uploadUserCover']);
 
 });

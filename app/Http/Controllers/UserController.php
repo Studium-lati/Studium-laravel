@@ -17,7 +17,8 @@ class UserController extends Controller
             'email' => 'required|email|unique:users',
             'password' => 'required|string',
             'role' => 'string','default:user','in:admin,user,owner',
-            'avatar' => 'string'
+            'avatar' => 'string',
+            'cover' => 'string'
         ]);
 
         $user = User::create([
@@ -26,7 +27,8 @@ class UserController extends Controller
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'role' => $request->role,
-            'avatar' => $request->avatar
+            'avatar' => $request->avatar,
+            'cover' => $request->cover
         ]);
 
         return response()->json(['user' => $user, 'message' => 'user registered successfully'], 201
@@ -81,7 +83,9 @@ class UserController extends Controller
             'phone' => 'string|max:10| min:10',
             'email' => 'email',
             'role' => 'string|in:admin,user,owner',
-            'avatar' => 'string'
+            'avatar' => 'string',
+            'cover' => 'string'
+
         ]);
         $user = auth('api')->user();
         $user->update($request->all());
@@ -154,7 +158,20 @@ class UserController extends Controller
         return response()->json(['user' => $user], 200);
 
     }
+
+    public function refresh(){
+        
+        $token = auth()->refresh( true, true);
+
+        return response()->json([
+            'access_token' => $token,
+            'token_type' => 'bearer',
+            'expires_in' => auth('api')->factory()->getTTL() * 60
+        ]);
+    }
    
+
+
 
 
  

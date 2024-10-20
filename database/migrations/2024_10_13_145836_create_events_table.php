@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('description');
             $table->dateTime('date');
+            $table->string('image')->nullable();
             $table->enum('status', ['active', 'inactive'])->default('active');
             $table->foreignId('stadium_id')->constrained()->onDelete('cascade');
             $table->foreignId('user_id')->constrained()->onDelete('cascade');

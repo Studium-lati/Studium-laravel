@@ -12,8 +12,14 @@ class StadiumController extends Controller
      */
     public function index()
     {
+        $stadiums = Stadium::all();
+        $feedbackController = new FeedbackController();
+        foreach ($stadiums as $stadium) {
+            $stadium->rating = $feedbackController->averageRating($stadium->id)->getData();
+            $stadium->save();
+        }
         $stauims = Stadium::where('status', 'open')->get();
-        return response()->json($stauims, 200);
+        return response()->json(['data'=>$stauims], 200);
 
         //
         
@@ -26,6 +32,7 @@ class StadiumController extends Controller
     {
         $request->validate([
             'name' => 'required',
+            'rating' => 'numeric','default:0',
             'location' => 'required',
             'latitude' => 'required',
             'longitude' => 'required',
@@ -103,9 +110,16 @@ class StadiumController extends Controller
         ]);
         $stadium = Stadium::find($stadiumId);
          
-        if(auth()->user()->id == $stadium->user_id){
+        if(auth()->user()->id == $stadium->user_id || auth()->user()->role == 'admin'){
+           
+
+
+            $request->merge(['image' => "https://pigeon-wanted-wildcat.ngrok-free.app/storage/stadiums/{$request->image}"]);
+
             $stadium->update($request->all());
-            return response()->json(['message' => 'Stadium updated successfully'], 200);
+            
+           
+            return response()->json(['message' => 'Stadium updated successfully','data'=>$stadium], 200);
     }
     return response()->json(['message' => 'Unauthorized'], 401);
       

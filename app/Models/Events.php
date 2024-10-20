@@ -15,6 +15,7 @@ class Events extends Model
         'date',
         'stadium_id',
         'user_id',
+        'image',
     ];
 
 

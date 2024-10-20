@@ -17,7 +17,8 @@ class Stadium extends Model
         'image',
         'description',
         'status',
-        'user_id'
+        'user_id',
+        'rating'
     ];
     public function user()
     {
