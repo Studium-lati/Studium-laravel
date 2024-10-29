@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Favorite;
 use App\Models\User;
 use GuzzleHttp\Psr7\Message;
 use Illuminate\Http\Request;
@@ -83,11 +84,17 @@ class UserController extends Controller
             'phone' => 'string|max:10| min:10',
             'email' => 'email',
             'role' => 'string|in:admin,user,owner',
-            'avatar' => 'string',
-            'cover' => 'string'
+            'avatar' => 'nullable',
+            'cover' => 'nullable'
 
         ]);
         $user = auth('api')->user();
+        if ($request->avatar!=null) {
+            
+        $request->merge(['avatar' => "https://pigeon-wanted-wildcat.ngrok-free.app/storage/avatars/{$request->avatar}"]);}
+        if ($request->cover!=null) {
+        $request->merge(['cover' => "https://pigeon-wanted-wildcat.ngrok-free.app/storage/covers/{$request->cover}"]);}
+
         $user->update($request->all());
         return response()->json(['user' => $user, 'message' => 'user updated successfully'], 200);
     }
@@ -173,6 +180,45 @@ class UserController extends Controller
 
 
 
+public function favorites(){
+    $user = auth('api')->user();
+    $favorites = $user->favorites;
+    return response()->json(['favorites' => $favorites], 200);
+}
+
+public function showFaveStadiums(){
+    $user = auth('api')->user();
+    $favorites = $user->favorites;
+    $stadiums = [];
+    foreach ($favorites as $favorite) {
+        $stadiums[] = $favorite->stadium;
+    }
+    return response()->json(['stadiums' => $stadiums], 200);
+}
+//--------------------------------------------------------------------------------
+    public function addFavorite(Request $request){
+        $request->validate([
+            'stadium_id' => 'required|integer'
+        ]);
+
+        $user = auth('api')->user();
+        $favorite = $user->favorites()->where('stadium_id', $request->stadium_id)->first();
+
+        if ($favorite) {
+            $favorite->delete();
+            return response()->json(['message' => 'Favorite removed successfully'], 200);
+        }
+
+      Favorite::create([
+            'user_id' => $user->id,
+            'stadium_id' => $request->stadium_id
+        ]);
+
+        return response()->json(['favorite' => $favorite, 'message' => 'Favorite added successfully'], 201);
+        
+    }
+   
+   
 
  
 

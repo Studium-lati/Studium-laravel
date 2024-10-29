@@ -35,5 +35,10 @@ class Stadium extends Model
         return $this->hasMany(Feedback::class);
     }
 
+    public function favorites()
+    {
+        return $this->hasMany(Favorite::class);
+    }   
+
     use HasFactory;
 }

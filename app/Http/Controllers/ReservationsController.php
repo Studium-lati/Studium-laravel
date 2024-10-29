@@ -75,7 +75,7 @@ class ReservationsController extends Controller
         $reservation->deposit = $request->deposit;
         $reservation->save();
 
-        return response()->json($reservation);
+        return response()->json($reservation, 201);
         
     }
 

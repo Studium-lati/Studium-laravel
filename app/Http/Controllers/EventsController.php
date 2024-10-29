@@ -40,6 +40,7 @@ class EventsController extends Controller
         $event->stadium_id = $request->stadium_id;
         $event->user_id = $request->user()->id;
         $event->status = $request->status;
+        $event->image = $request->image;
         $event->save();
         return response()->json($event);
 
@@ -51,7 +52,7 @@ class EventsController extends Controller
             'description' => 'nullable',
             'date' => '=nullable',
             'stadium_id' => 'nullable',
-            'status' => 'required','in' => ['active', 'inactive'],
+            'status' => 'nullable','in' => ['active', 'inactive'],
             'image' => 'nullable'
 
         ]);
@@ -59,7 +60,9 @@ class EventsController extends Controller
         if($request->user()->role != 'owner' || $event->user_id != auth()->id()){
             return response()->json(['message' => 'You are not allowed to edit this event'], 403);
         }
-        $request->merge(['image' => "https://pigeon-wanted-wildcat.ngrok-free.app/storage/events/{$request->image}"]);
+        if($request->has('image')){   
+                 $request->merge(['image' => "https://pigeon-wanted-wildcat.ngrok-free.app/storage/events/{$request->image}"]);
+        }
 
 
         

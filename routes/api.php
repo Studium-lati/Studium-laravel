@@ -25,6 +25,7 @@ Route::middleware('auth:api')->group(function () {
 
  Route::get('stadiums/search', [StadiumController::class, 'showStadium']);
     Route::get('stadiums', [StadiumController::class, 'index']);
+    Route::get('stadiums/best', [StadiumController::class, 'indexByRating']);
 
     //reservationfor user
     Route::post('reservations/stadium', [ReservationsController::class, 'reserveStadium']); 
@@ -65,6 +66,7 @@ Route::middleware('auth:api')->group(function () {
 
     Route::put('random-match-request/cancel', [RandomMatchRequestsController::class, 'cancel']);
 
+    Route::get('checkMatched', [RandomMatchRequestsController::class, 'checkMatched']);
 
 
 
@@ -91,5 +93,11 @@ Route::middleware('auth:api')->group(function () {
     Route::post('upload/stadium', [UploaderController::class, 'uploadStadiumImage']);
     Route::post('upload/event', [UploaderController::class, 'uploadeventImage']);
     Route::post('upload/user/cover', [UploaderController::class, 'uploadUserCover']);
+
+
+    //-------------------------------------favorites--------------------------------
+    Route::get('favorites', [UserController::class, 'favorites']);
+    Route::post('favorites/add', [UserController::class, 'addFavorite']);
+    Route::get('favorites/stadiums', [UserController::class, 'showFaveStadiums']);
 
 });

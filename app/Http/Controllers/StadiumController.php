@@ -18,11 +18,23 @@ class StadiumController extends Controller
             $stadium->rating = $feedbackController->averageRating($stadium->id)->getData();
             $stadium->save();
         }
-        $stauims = Stadium::where('status', 'open')->get();
-        return response()->json(['data'=>$stauims], 200);
+        $stadiums = Stadium::where('status', 'open')->get();
+        return response()->json(['data'=>$stadiums], 200);
 
         //
         
+    }
+
+    public function indexByRating()
+    {
+        $stadiums = Stadium::all();
+        $feedbackController = new FeedbackController();
+        foreach ($stadiums as $stadium) {
+            $stadium->rating = $feedbackController->averageRating($stadium->id)->getData();
+            $stadium->save();
+        }
+        $stadiums = Stadium::where('status', 'open')->orderBy('rating', 'desc')->get();
+        return response()->json(['data' => $stadiums], 200);
     }
 
     /**

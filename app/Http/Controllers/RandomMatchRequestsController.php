@@ -14,12 +14,12 @@ class RandomMatchRequestsController extends Controller
         $request->validate([
             'preferred_time' => 'nullable|date_format:H:i',
             'preferred_date' => 'nullable|date',
-            'is_available_all_time' => 'boolean',
+            'is_available_all_days' => 'boolean',
         ]);
         $userId = auth()->id();
         $preferredTime = $request->input('preferred_time');
         $preferredDate = $request->input('preferred_date');
-        $isAvailableAllTime = $request->input('is_available_all_time', false);
+        $isAvailableAllTime = $request->input('is_available_all_days');
 
         // Create a new random match request
         RandomMatchRequests::create([
@@ -40,7 +40,7 @@ class RandomMatchRequestsController extends Controller
                             ->first();
 
         if (!$userRequest) {
-            return 'No pending match request found for this user.';
+            return response()->json("No pending match request found for this user.",202);
         }
 
         // Find a match with another pending request that meets the criteria
@@ -73,7 +73,7 @@ class RandomMatchRequestsController extends Controller
            );
         }
 
-        return response()->json("No match found at the moment.");
+        return response()->json("No match found at the moment.",202);
     }
 
     // Log the match into the match_logs table
@@ -108,6 +108,20 @@ class RandomMatchRequestsController extends Controller
         $userRequest->save();
 
         return response()->json("Match request cancelled successfully.");
+    }
+
+    public function checkMatched(){
+        $userId = auth()->id();
+        $userRequest = RandomMatchRequests::where('user_id', $userId)
+                            
+                            ->orderBy('id', 'desc')->firstOrFail();
+
+        if ($userRequest->status != 'matched') {
+            return response()->json(["No matched request found for this user."],202);
+        }
+
+        return response()->json(["Matched request found for this user." ,$userRequest] ,200);
+
     }
 
     
