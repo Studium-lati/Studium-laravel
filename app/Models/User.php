@@ -93,14 +93,9 @@ class User extends Authenticatable implements JWTSubject
         return $this->hasMany(Events::class);
     }
     
-  
-    public function sentMessages(){
-        return $this->hasMany(Messages::class, 'sender_id');
-    }
+   
 
-    public function receivedMessages(){
-        return $this->hasMany(Messages::class, 'receiver_id');
-    }
+    
 
     public function feedbacks()
     {
@@ -112,8 +107,21 @@ class User extends Authenticatable implements JWTSubject
         return $this->hasMany(Favorite::class);
     }
 
+    public function messages()
+    {
+        return $this->hasMany(Message::class, 'sender_id');
+    }
 
+    public function messagesReceived()
+    {
+        return $this->hasMany(Message::class, 'receiver_id');
+    }
+    public function allMessages($id)
+    {
+        $sentMessages = $this->messages()->where('receiver_id',$id)->toBase();
+        $receivedMessages = $this->messagesReceived()->where('sender_id', $id)->toBase();
 
-
+        return $sentMessages->union($receivedMessages)->get();
+    }
     
 }

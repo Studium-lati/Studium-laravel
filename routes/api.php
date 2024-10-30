@@ -2,11 +2,13 @@
 
 use App\Http\Controllers\EventsController;
 use App\Http\Controllers\FeedbackController;
+use App\Http\Controllers\MessageController;
 use App\Http\Controllers\ReservationsController;
 use App\Http\Controllers\StadiumController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\RandomMatchRequestsController;
 use App\Http\Controllers\UploaderController;
+use App\Http\Controllers\ChatController;
 use Illuminate\Support\Facades\Route;
 
 Route::post('register', [UserController::class, 'create']);
@@ -99,5 +101,12 @@ Route::middleware('auth:api')->group(function () {
     Route::get('favorites', [UserController::class, 'favorites']);
     Route::post('favorites/add', [UserController::class, 'addFavorite']);
     Route::get('favorites/stadiums', [UserController::class, 'showFaveStadiums']);
+
+
+
+
+    //-------------------------------------chat--------------------------------
+    Route::post('chat', [MessageController::class, 'sendMessage']);
+    Route::get('chat/{id}', [MessageController::class, 'showMessages']);
 
 });
